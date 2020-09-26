@@ -30,4 +30,24 @@ class User
         $stmt->bindValue(':password', $this->password, PDO::PARAM_STR);
         return $stmt->execute();
     }
+
+    public function emailExists()
+    {
+        $query = "select * from {$this->table_name} where email = :email limit 1";
+        $stmt = $this->conn->prepare($query);
+        $this->email = htmlspecialchars(strip_tags($this->email));
+        $stmt->bindValue(':email', $this->email, PDO::PARAM_STR);
+        $stmt->execute();
+        $num = $stmt->rowCount();
+        if ($num > 0) {
+            $res = $stmt->fetch(PDO::FETCH_ASSOC);
+            $this->id = $res['id'];
+            $this->firstname = $res['firstname'];
+            $this->lastname = $res['lastname'];
+            $this->password = $res['password'];
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
